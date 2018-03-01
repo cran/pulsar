@@ -7,16 +7,15 @@
 batch.pulsar(data, fun = huge::huge, fargs = list(),
   criterion = c("stars"), thresh = 0.1, subsample.ratio = NULL,
   lb.stars = FALSE, ub.stars = FALSE, rep.num = 20, seed = NULL,
-  regdir = getTempDir(), regid = basename(regdir), init = "subtwo",
-  conffile = ".BatchJobs.R", job.res = list(), progressbars = TRUE,
-  cleanup = FALSE)
+  wkdir = getwd(), regdir = NA, init = "init", conffile = "",
+  job.res = list(), cleanup = FALSE)
 }
 \arguments{
 \item{data}{A \eqn{n*p} matrix of data matrix input to solve for the \eqn{p*p} graphical model}
 
 \item{fun}{pass in a function that returns a list representing \eqn{p*p} sparse, undirected graphical models along the desired regularization path. The expected inputs to this function are: a data matrix input and a sequence of decreasing lambdas and must return a list or S3 object with a member \emph{named} \code{path}. This should be a list of adjacency matrices for each value of \code{lambda}. See \code{\link{pulsar-function}} for more information.}
 
-\item{fargs}{arguments to argument \code{fun}. Must be a named list and requires at least one member \code{lambda}, a numeric vector with values for the penality parameter.}
+\item{fargs}{arguments to argument \code{fun}. Must be a named list and requires at least one member \code{lambda}, a numeric vector with values for the penalty parameter.}
 
 \item{criterion}{A character vector of selection statistics. Multiple criteria can be supplied. Only StARS can be used to automatically select an optimal index for the lambda path. See details for additional statistics.}
 
@@ -32,26 +31,24 @@ batch.pulsar(data, fun = huge::huge, fargs = list(),
 
 \item{seed}{A numeric seed to force predictable subsampling. Default is NULL. Use for testing purposes only.}
 
-\item{regdir}{directory to store intermediate batch job files}
+\item{wkdir}{set the working directory if different than \code{\link{getwd}}}
 
-\item{regid}{text string representing a unique registry ID for your project}
+\item{regdir}{directory to store intermediate batch job files. Default will be a temporary directory}
 
-\item{init}{text string appended to basename of regdir to store the batch jobs for the initial StARS variability estimate}
+\item{init}{text string appended to basename of the regdir path to store the batch jobs for the initial StARS variability estimate (ignored if `regdir` is NA)}
 
-\item{conffile}{path to BatchJobs configuration file}
+\item{conffile}{path to or string that identifies a \code{\link[batchtools]{batchtools}} configuration file. This argument is passed directly to the \code{name} argument of the \code{\link[pulsar]{findConfFile}} function. See that help for detailed explanation.}
 
-\item{job.res}{named list of resources needed for each job (e.g. for intermediate PBS script). The format and members depends on configuation and template. See examples section for a Torque example}
+\item{job.res}{named list of resources needed for each job (e.g. for PBS submission script). The format and members depends on configuration and template. See examples section for a Torque example}
 
-\item{progressbars}{Flag to show various BatchJobs progress bars. Set FALSE for less output.}
-
-\item{cleanup}{Flag for removing BatchJob registry files. Recommended FALSE unless you're sure indetermediate data shouldn't be saved.}
+\item{cleanup}{Flag for removing batchtools registry files. Recommended FALSE unless you're sure intermediate data shouldn't be saved.}
 }
 \value{
-an S3 object of class \code{pulsar} with a named member for each stability metric run. Within each of these are:
+an S3 object of class \code{\link{batch.pulsar}} with a named member for each stability criterion/metric. Within each of these are:
 \itemize{
-   \item summary: the summary statistic over \code{rep.num} graphs at each value of lambda
-   \item criterion: the stability criterion used
-   \item merge: the raw statistic over the \code{rep.num} graphs, prior to summarization
+   \item summary: the summary criterion over \code{rep.num} graphs at each value of lambda
+   \item criterion: the stability metric
+   \item merge: the raw criterion merged over the \code{rep.num} graphs (constructed from \code{rep.num} subsamples), prior to summarization
    \item opt.ind: index (along the path) of optimal lambda selected by the criterion at the desired threshold. Will return \eqn{0} if no optimum is found or \code{NULL} if selection for the criterion is not implemented.
   }
 If \code{stars} is included as a criterion then additional arguments include
@@ -60,59 +57,51 @@ If \code{stars} is included as a criterion then additional arguments include
    \item ub.index: the lambda index of the upper bound at \eqn{N=2} samples if \code{ub.stars} flag is set to TRUE
 }
 
-reg: Registry object. See \code{BatchJobs::makeRegistry}
+reg: Registry object. See \code{batchtools::makeRegistry}
 
-id: Identifier for mapping graph estimation function. See \code{BatchJobs::batchMap}
+id: Identifier for mapping graph estimation function. See \code{batchtools::batchMap}
 
 call: the original function call
 }
 \description{
 Run pulsar using stability selection, or another criteria, to select an undirected graphical model over a lambda-path.
 }
-\details{
-The options for \code{criterion} statistics are:
-\itemize{
-   \item stars (Stability approach to regularization selection)
-   \item gcd   (Graphet correlation distance, requires the \pkg{orca} package)
-   \item estrada (estrada class) see \code{\link{estrada.class}}
-   \item sufficiency (Tandon & Ravikumar's sufficiency statistic)
-}
-}
 \examples{
 \dontrun{
 ## Generate the data with huge:
 library(huge)
 set.seed(10010)
-p <- 40 ; n <- 1200
+p <- 400 ; n <- 1200
 dat   <- huge.generator(n, p, "hub", verbose=FALSE, v=.1, u=.3)
 lams  <- getLamPath(.2, .01, len=40)
-
-## Run batch.pulsar on a Torque cluster
-
-## Get example template and config files
-url <- "https://raw.githubusercontent.com/zdk123/pulsar/master/inst/extdata"
-download.file(paste(url, "BatchJobsTorque.R", sep="/"), destfile=".BatchJobs.R")
-download.file(paste(url, "simpletorque.tml", sep="/"),  destfile="simpletorque.tml")
-
-## Give each job 1gb of memory and a limit of 30 minutes
-resources <- list(memory="1GB", nodes="1", walltime="00:30:00")
 hugeargs  <- list(lambda=lams, verbose=FALSE)
+
+## Run batch.pulsar using snow on 5 cores, and show progress.
+options(mc.cores=5)
+options(batchtools.progress=TRUE, batchtools.verbose=FALSE)
+out <- batch.pulsar(dat$data, fun=huge::huge, fargs=hugeargs,
+                 rep.num=20, criterion='stars', conffile='snow')
+## Run batch.pulsar on a Torque cluster
+## Give each job 1gb of memory and a limit of 30 minutes
+resources <- list(mem="1GB", nodes="1", walltime="00:30:00")
 out.p <- batch.pulsar(dat$data, fun=huge::huge, fargs=hugeargs,
-                      rep.num=100, criterion=c('stars', 'gcd'),
-                      job.res=resources, regdir=file.path(getwd(), "testtorq"))
+                 rep.num=100, criterion=c('stars', 'gcd'), conffile='torque'
+                 job.res=resources, regdir=file.path(getwd(), "testtorq"))
 plot(out.p)
+## take a look at the default torque config and template files we just used
+file.show(findConfFile('torque'))
+file.show(findTemplateFile('simpletorque'))
 }
 }
 \references{
-Müller, C. L., Bonneau, R., & Kurtz, Z. (2016). Generalized Stability Approach for Regularized Graphical Models. arXiv http://arxiv.org/abs/1605.07072
+Müller, C. L., Bonneau, R., & Kurtz, Z. (2016). Generalized Stability Approach for Regularized Graphical Models. arXiv https://arxiv.org/abs/1605.07072
 
 Liu, H., Roeder, K., & Wasserman, L. (2010). Stability approach to regularization selection (stars) for high dimensional graphical models. Proceedings of the Twenty-Third Annual Conference on Neural Information Processing Systems (NIPS).
 
 Zhao, T., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2012). The huge Package for High-dimensional Undirected Graph Estimation in R. The Journal of Machine Learning Research, 13, 1059–1062.
 
-Bischl, B., Lang, M., Mersmann, O., Rahnenführer, J., & Weihs, C. (2015). BatchJobs and BatchExperiments : Abstraction Mechanisms for Using R in Batch Environments. Journal of Statistical Software, 64(11), 1–25. doi:10.18637/jss.v064.i11
+Michel Lang, Bernd Bischl, Dirk Surmann (2017). batchtools: Tools for R to work on batch systems. The Journal of Open Source Software, 2(10). URL https://doi.org/10.21105/joss.00135.
 }
 \seealso{
-\code{\link{pulsar}}
+\code{\link{pulsar}} \code{\link{refit}}
 }
-
