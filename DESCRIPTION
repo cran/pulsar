@@ -1,7 +1,7 @@
 Package: pulsar
 Title: Parallel Utilities for Lambda Selection along a Regularization
         Path
-Version: 0.3.1
+Version: 0.3.2
 Encoding: UTF-8
 Authors@R: c(person("Zachary", "Kurtz", role = c("aut", "cre"), email="zdkurtz@gmail.com"),
              person("Christian", "M\u00FCller", role = c("aut", "ctb"), email="cmueller@simonsfoundation.org"))
@@ -16,9 +16,9 @@ Imports: methods, parallel, graphics, stats, utils, Matrix
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-03-01 04:29:04 UTC; zachary
+Packaged: 2018-03-17 19:02:35 UTC; zachary
 Author: Zachary Kurtz [aut, cre],
   Christian Müller [aut, ctb]
 Maintainer: Zachary Kurtz <zdkurtz@gmail.com>
 Repository: CRAN
-Date/Publication: 2018-03-01 16:02:42 UTC
+Date/Publication: 2018-03-17 23:30:50 UTC

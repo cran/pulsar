@@ -33,7 +33,7 @@ batch.pulsar(data, fun = huge::huge, fargs = list(),
 
 \item{wkdir}{set the working directory if different than \code{\link{getwd}}}
 
-\item{regdir}{directory to store intermediate batch job files. Default will be a temporary directory}
+\item{regdir}{directory to store intermediate batch job files. Default will be a tempory directory}
 
 \item{init}{text string appended to basename of the regdir path to store the batch jobs for the initial StARS variability estimate (ignored if `regdir` is NA)}
 

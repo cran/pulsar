@@ -130,7 +130,7 @@ findTemplateFile <- function(name) {
 #' Run pulsar using stability selection, or another criteria, to select an undirected graphical model over a lambda-path.
 #'
 #' @param wkdir set the working directory if different than \code{\link{getwd}}
-#' @param regdir directory to store intermediate batch job files. Default will be a temporary directory
+#' @param regdir directory to store intermediate batch job files. Default will be a tempory directory
 #' @param init text string appended to basename of the regdir path to store the batch jobs for the initial StARS variability estimate (ignored if `regdir` is NA)
 #' @param conffile path to or string that identifies a \code{\link[batchtools]{batchtools}} configuration file. This argument is passed directly to the \code{name} argument of the \code{\link[pulsar]{findConfFile}} function. See that help for detailed explanation.
 #' @param job.res named list of resources needed for each job (e.g. for PBS submission script). The format and members depends on configuration and template. See examples section for a Torque example
