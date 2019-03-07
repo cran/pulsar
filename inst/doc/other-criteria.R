@@ -1,10 +1,13 @@
 ## ---- eval=TRUE, echo=FALSE----------------------------------------------
 library(pulsar)
 
-## ---- eval=TRUE----------------------------------------------------------
+## ---- eval=TRUE, message=FALSE-------------------------------------------
+  library(huge)
+  library(Matrix)
+
   p <- 40
   n <- round(8*p * log(p))
-  library(huge)
+
   set.seed(10010)
   dat <- huge.generator(n, p, 'hub', verbose=FALSE, v=.3, u=.1)
 
