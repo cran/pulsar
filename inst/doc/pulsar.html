@@ -18,10 +18,10 @@
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -31,16 +31,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -49,9 +49,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -270,6 +292,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -278,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Graphical model selection with pulsar</h1>
-<h4 class="author"><em>Zachary D. Kurtz</em></h4>
+<h4 class="author">Zachary D. Kurtz</h4>
 
 
 
@@ -310,81 +335,81 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>The most recent version of pulsar is on <a href="https://github.com/zdk123/pulsar">github</a> and installation requires the devtools package. For the purposes of this tutorial suggested but not-imported packages will be prompted as needed (e.g. <code>huge</code>, <code>orca</code>, …).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install.packages('pulsar')</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">## uncomment below for the dev version</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># library(devtools)</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># install_github(&quot;zdk123/pulsar&quot;)</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(pulsar)</a></code></pre></div>
+<p>The most recent version of pulsar is on <a href="https://github.com/zdk123/pulsar">github</a> and installation requires the devtools package. For the purposes of this tutorial suggested but not-imported packages will be prompted as needed (e.g. <code>huge</code>, <code>orca</code>, …).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># install.packages(&#39;pulsar&#39;)</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co">## uncomment below for the dev version</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># library(devtools)</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># install_github(&quot;zdk123/pulsar&quot;)</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(pulsar)</span></code></pre></div>
 </div>
 <div id="basic-usage" class="section level2">
 <h2>Basic usage</h2>
 <p>In this example, we will use synthetic data generated from the <code>huge</code> package.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(huge)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">10010</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">p &lt;-<span class="st"> </span><span class="dv">40</span> ; n &lt;-<span class="st"> </span><span class="dv">3000</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">dat  &lt;-<span class="st"> </span><span class="kw">huge.generator</span>(n, p, <span class="st">&quot;hub&quot;</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">v=</span>.<span class="dv">1</span>, <span class="dt">u=</span>.<span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">lmax &lt;-<span class="st"> </span><span class="kw">getMaxCov</span>(dat<span class="op">$</span>sigmahat)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">lams &lt;-<span class="st"> </span><span class="kw">getLamPath</span>(lmax, lmax<span class="op">*</span>.<span class="dv">05</span>, <span class="dt">len=</span><span class="dv">40</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(huge)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">set.seed</span>(<span class="dv">10010</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>p &lt;-<span class="st"> </span><span class="dv">40</span> ; n &lt;-<span class="st"> </span><span class="dv">3000</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>dat  &lt;-<span class="st"> </span><span class="kw">huge.generator</span>(n, p, <span class="st">&quot;hub&quot;</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">v=</span>.<span class="dv">1</span>, <span class="dt">u=</span>.<span class="dv">5</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>lmax &lt;-<span class="st"> </span><span class="kw">getMaxCov</span>(dat<span class="op">$</span>sigmahat)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>lams &lt;-<span class="st"> </span><span class="kw">getLamPath</span>(lmax, lmax<span class="op">*</span>.<span class="dv">05</span>, <span class="dt">len=</span><span class="dv">40</span>)</span></code></pre></div>
 <p>You can use the <code>pulsar</code> package to run StARS, serially, as a drop-in replacement for the <code>huge.select</code> function in the <code>huge</code> package. Pulsar differs in that we run the model selection step first and then refit using arguments stored in the original call. Remove the <code>seed</code> argument for real data (this seeds the pseudo-random number generator to fix subsampling for reproducing test code).</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">hugeargs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">lambda=</span>lams, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">time1    &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">out.p    &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>huge, <span class="dt">fargs=</span>hugeargs, <span class="dt">rep.num=</span><span class="dv">20</span>,</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">                   <span class="dt">criterion=</span><span class="st">'stars'</span>, <span class="dt">seed=</span><span class="dv">10010</span>))</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">fit.p    &lt;-<span class="st"> </span><span class="kw">refit</span>(out.p)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">## Inspect the output ##</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">out.p</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">fit.p</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>hugeargs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">lambda=</span>lams, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>time1    &lt;-<span class="st"> </span><span class="kw">system.time</span>(</span>
+<span id="cb3-3"><a href="#cb3-3"></a>out.p    &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>huge, <span class="dt">fargs=</span>hugeargs, <span class="dt">rep.num=</span><span class="dv">20</span>,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>                   <span class="dt">criterion=</span><span class="st">&#39;stars&#39;</span>, <span class="dt">seed=</span><span class="dv">10010</span>))</span>
+<span id="cb3-5"><a href="#cb3-5"></a>fit.p    &lt;-<span class="st"> </span><span class="kw">refit</span>(out.p)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">## Inspect the output ##</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>out.p</span>
+<span id="cb3-9"><a href="#cb3-9"></a>fit.p</span></code></pre></div>
 <p>Including the lower bound option <code>lb.stars</code> and upper bound option <code>ub.stars</code> can improve runtime for same StARS result (referred to as B-StARS in Mueller et al., 2016).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">time2 &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">out.b &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>huge, <span class="dt">fargs=</span>hugeargs, <span class="dt">rep.num=</span><span class="dv">20</span>,</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">          <span class="dt">criterion=</span><span class="st">'stars'</span>, <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span><span class="dv">10010</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>time2 &lt;-<span class="st"> </span><span class="kw">system.time</span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>out.b &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>huge, <span class="dt">fargs=</span>hugeargs, <span class="dt">rep.num=</span><span class="dv">20</span>,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>          <span class="dt">criterion=</span><span class="st">&#39;stars&#39;</span>, <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span><span class="dv">10010</span>))</span></code></pre></div>
 <p>Compare runtimes and StARS-selected lambda index for each method.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">time2[[<span class="dv">3</span>]] <span class="op">&lt;</span><span class="st"> </span>time1[[<span class="dv">3</span>]]</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">opt.index</span>(out.p, <span class="st">'stars'</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.b, <span class="st">'stars'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>time2[[<span class="dv">3</span>]] <span class="op">&lt;</span><span class="st"> </span>time1[[<span class="dv">3</span>]]</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">opt.index</span>(out.p, <span class="st">&#39;stars&#39;</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.b, <span class="st">&#39;stars&#39;</span>)</span></code></pre></div>
 </div>
 <div id="using-a-custom-graphical-model-method" class="section level2">
 <h2>Using a custom graphical model method</h2>
 <p>You can pass in an arbitrary graphical model estimation function to <code>fun</code>. The function has some requirements: the first argument must be the nxp data matrix, and one argument must be named <code>lambda</code>, which should be a decreasing numeric vector containing the lambda path. The output should be a list of adjacency matrices (which can be of sparse representation from the <code>Matrix</code> package to save memory). Here is an example from <code>QUIC</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">library</span>(QUIC)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">quicr &lt;-<span class="st"> </span><span class="cf">function</span>(data, lambda) {</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">    S    &lt;-<span class="st"> </span><span class="kw">cov</span>(data)</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">    est  &lt;-<span class="st"> </span>QUIC<span class="op">::</span><span class="kw">QUIC</span>(S, <span class="dt">rho=</span><span class="dv">1</span>, <span class="dt">path=</span>lambda, <span class="dt">msg=</span><span class="dv">0</span>, <span class="dt">tol=</span><span class="fl">1e-2</span>)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">    path &lt;-<span class="st">  </span><span class="kw">lapply</span>(<span class="kw">seq</span>(<span class="kw">length</span>(lambda)), <span class="cf">function</span>(i) {</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">                tmp &lt;-<span class="st"> </span>est<span class="op">$</span>X[,,i]; <span class="kw">diag</span>(tmp) &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">                <span class="kw">as</span>(tmp<span class="op">!=</span><span class="dv">0</span>, <span class="st">&quot;lgCMatrix&quot;</span>)</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">    })</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">    est<span class="op">$</span>path &lt;-<span class="st"> </span>path</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">    est</a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">}</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(QUIC)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>quicr &lt;-<span class="st"> </span><span class="cf">function</span>(data, lambda) {</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    S    &lt;-<span class="st"> </span><span class="kw">cov</span>(data)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    est  &lt;-<span class="st"> </span>QUIC<span class="op">::</span><span class="kw">QUIC</span>(S, <span class="dt">rho=</span><span class="dv">1</span>, <span class="dt">path=</span>lambda, <span class="dt">msg=</span><span class="dv">0</span>, <span class="dt">tol=</span><span class="fl">1e-2</span>)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    path &lt;-<span class="st">  </span><span class="kw">lapply</span>(<span class="kw">seq</span>(<span class="kw">length</span>(lambda)), <span class="cf">function</span>(i) {</span>
+<span id="cb6-6"><a href="#cb6-6"></a>                tmp &lt;-<span class="st"> </span>est<span class="op">$</span>X[,,i]; <span class="kw">diag</span>(tmp) &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>                <span class="kw">as</span>(tmp<span class="op">!=</span><span class="dv">0</span>, <span class="st">&quot;lgCMatrix&quot;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8"></a>    })</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    est<span class="op">$</span>path &lt;-<span class="st"> </span>path</span>
+<span id="cb6-10"><a href="#cb6-10"></a>    est</span>
+<span id="cb6-11"><a href="#cb6-11"></a>}</span></code></pre></div>
 <p>We can use <code>pulsar</code> with a similar call. We can also parallelize this a bit for multi-processor machines by specifying <code>ncores</code> (which wraps <code>mclapply</code> in the parallel package).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">quicargs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">lambda=</span>lams)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">nc    &lt;-<span class="st"> </span><span class="cf">if</span> (.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> 'unix'</span>) <span class="dv">2</span> <span class="cf">else</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">out.q &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>quicr, <span class="dt">fargs=</span>quicargs, <span class="dt">rep.num=</span><span class="dv">100</span>,</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">                <span class="dt">criterion=</span><span class="st">'stars'</span>, <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">                <span class="dt">ncores=</span>nc, <span class="dt">seed=</span><span class="dv">10010</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>quicargs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">lambda=</span>lams)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>nc    &lt;-<span class="st"> </span><span class="cf">if</span> (.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &#39;unix&#39;</span>) <span class="dv">2</span> <span class="cf">else</span> <span class="dv">1</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>out.q &lt;-<span class="st"> </span><span class="kw">pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>quicr, <span class="dt">fargs=</span>quicargs, <span class="dt">rep.num=</span><span class="dv">100</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>                <span class="dt">criterion=</span><span class="st">&#39;stars&#39;</span>, <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>,</span>
+<span id="cb7-5"><a href="#cb7-5"></a>                <span class="dt">ncores=</span>nc, <span class="dt">seed=</span><span class="dv">10010</span>)</span></code></pre></div>
 </div>
 <div id="graphlet-stability" class="section level2">
 <h2>Graphlet stability</h2>
 <p>We can use the graphlet correlation distance (gcd) as an additional stability criterion (G-StARS). We could call <code>pulsar</code> again with a new criterion, or simply <code>update</code> the arguments for model we already used. Then, we can use our default approach for selecting the optimal index, based on the gcd+StARS criterion: choose the minimum gcd summary statistic between the upper and lower StARS bounds.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">out.q2 &lt;-<span class="st"> </span><span class="kw">update</span>(out.q, <span class="dt">criterion=</span><span class="kw">c</span>(<span class="st">'stars'</span>, <span class="st">'gcd'</span>))</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">opt.index</span>(out.q2, <span class="st">'gcd'</span>) &lt;-<span class="st"> </span><span class="kw">get.opt.index</span>(out.q2, <span class="st">'gcd'</span>)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">fit.q2 &lt;-<span class="st"> </span><span class="kw">refit</span>(out.q2)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>out.q2 &lt;-<span class="st"> </span><span class="kw">update</span>(out.q, <span class="dt">criterion=</span><span class="kw">c</span>(<span class="st">&#39;stars&#39;</span>, <span class="st">&#39;gcd&#39;</span>))</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">opt.index</span>(out.q2, <span class="st">&#39;gcd&#39;</span>) &lt;-<span class="st"> </span><span class="kw">get.opt.index</span>(out.q2, <span class="st">&#39;gcd&#39;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>fit.q2 &lt;-<span class="st"> </span><span class="kw">refit</span>(out.q2)</span></code></pre></div>
 <p>Compare model error by relative Hamming distances between refit adjacency matrices and the true graph and visualize the results:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">plot</span>(out.q2, <span class="dt">scale=</span><span class="ot">TRUE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">starserr &lt;-<span class="st"> </span><span class="kw">sum</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>stars <span class="op">!=</span><span class="st"> </span>dat<span class="op">$</span>theta)<span class="op">/</span>p<span class="op">^</span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">gcderr   &lt;-<span class="st"> </span><span class="kw">sum</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>gcd   <span class="op">!=</span><span class="st"> </span>dat<span class="op">$</span>theta)<span class="op">/</span>p<span class="op">^</span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">gcderr <span class="op">&lt;</span><span class="st"> </span>starserr</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">## install.packages('network')</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">truenet  &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">as.matrix</span>(dat<span class="op">$</span>theta))</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">starsnet &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">summary</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>stars))</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">gcdnet   &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">summary</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>gcd))</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb10-10" data-line-number="10">coords &lt;-<span class="st"> </span><span class="kw">plot</span>(truenet, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;TRUE&quot;</span>)</a>
-<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="kw">plot</span>(starsnet, <span class="dt">coord=</span>coords, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;StARS&quot;</span>)</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="kw">plot</span>(gcdnet, <span class="dt">coord=</span>coords, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;gcd+StARS&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">plot</span>(out.q2, <span class="dt">scale=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>starserr &lt;-<span class="st"> </span><span class="kw">sum</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>stars <span class="op">!=</span><span class="st"> </span>dat<span class="op">$</span>theta)<span class="op">/</span>p<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>gcderr   &lt;-<span class="st"> </span><span class="kw">sum</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>gcd   <span class="op">!=</span><span class="st"> </span>dat<span class="op">$</span>theta)<span class="op">/</span>p<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>gcderr <span class="op">&lt;</span><span class="st"> </span>starserr</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">## install.packages(&#39;network&#39;)</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>truenet  &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">as.matrix</span>(dat<span class="op">$</span>theta))</span>
+<span id="cb10-7"><a href="#cb10-7"></a>starsnet &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">summary</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>stars))</span>
+<span id="cb10-8"><a href="#cb10-8"></a>gcdnet   &lt;-<span class="st"> </span>network<span class="op">::</span><span class="kw">network</span>(<span class="kw">summary</span>(fit.q2<span class="op">$</span>refit<span class="op">$</span>gcd))</span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb10-10"><a href="#cb10-10"></a>coords &lt;-<span class="st"> </span><span class="kw">plot</span>(truenet, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;TRUE&quot;</span>)</span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="kw">plot</span>(starsnet, <span class="dt">coord=</span>coords, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;StARS&quot;</span>)</span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">plot</span>(gcdnet, <span class="dt">coord=</span>coords, <span class="dt">usearrows=</span><span class="ot">FALSE</span>, <span class="dt">main=</span><span class="st">&quot;gcd+StARS&quot;</span>)</span></code></pre></div>
 </div>
 <div id="batch-mode" class="section level2">
 <h2>Batch Mode</h2>
@@ -395,23 +420,23 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>This also means we will need access to a writable directory to write intermediate files (where the batchtools registry is stored). These will be automatically generated R scripts, error and output files and sqlite files so that batchtools can keep track of everything (although a different database can be used). Please see that package’s documentation for more information. By default, <code>pulsar</code> will create the registry directory under R’s (platform-dependent) tmp directory but this can be overridden(<code>regdir</code> argument to <code>batch.pulsar</code>).</p>
 <p>For generating batchtools, we need a configuration file (supply a path string to <code>conffile</code> argument, a good choice is the working directory) and, for an hpc with a queuing system, a template file. Example config (batchtools.conf.torque.R) and PBS template file (simpletorque.tmpl) for Torque can be found in the inst/config/ and inst/templates/ subdirectories of this repo, respectively. See the <a href="https://mllg.github.io/batchtools/articles/batchtools.html">batchtools help page</a> for creating templates for other systems.</p>
 <p>For this example I suggest using batchtools interactive clusters (serial) mode to get things up and running. The necessary config file is included in this package.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">conffile &lt;-<span class="st"> </span>pulsar<span class="op">::</span><span class="kw">findConfFile</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>conffile &lt;-<span class="st"> </span>pulsar<span class="op">::</span><span class="kw">findConfFile</span>()</span></code></pre></div>
 <p>Since batchtools is not imported by <code>pulsar</code>, it needs to be loaded. Verbosity and progressbar options for batchtools is set by global options. Uncomment <code>cleanup=TRUE</code> to remove registry directory (useful if running through the example code multiple times).</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">## uncomment below if batchtools is not already installed</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co"># install.packages('batchtools')</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">library</span>(batchtools)</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="kw">options</span>(<span class="dt">batchtools.progress=</span><span class="ot">TRUE</span>, <span class="dt">batchtools.verbose=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">out.batch &lt;-<span class="st"> </span><span class="kw">batch.pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>quicr, <span class="dt">fargs=</span>quicargs, <span class="dt">rep.num=</span><span class="dv">100</span>,</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">                          <span class="dt">criterion=</span><span class="st">'stars'</span>, <span class="dt">seed=</span><span class="dv">10010</span> <span class="co">#, cleanup=TRUE</span></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">                         )</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## uncomment below if batchtools is not already installed</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co"># install.packages(&#39;batchtools&#39;)</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">library</span>(batchtools)</span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">options</span>(<span class="dt">batchtools.progress=</span><span class="ot">TRUE</span>, <span class="dt">batchtools.verbose=</span><span class="ot">FALSE</span>)</span>
+<span id="cb12-5"><a href="#cb12-5"></a>out.batch &lt;-<span class="st"> </span><span class="kw">batch.pulsar</span>(dat<span class="op">$</span>data, <span class="dt">fun=</span>quicr, <span class="dt">fargs=</span>quicargs, <span class="dt">rep.num=</span><span class="dv">100</span>,</span>
+<span id="cb12-6"><a href="#cb12-6"></a>                          <span class="dt">criterion=</span><span class="st">&#39;stars&#39;</span>, <span class="dt">seed=</span><span class="dv">10010</span> <span class="co">#, cleanup=TRUE</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>                         )</span></code></pre></div>
 <p>Check that we get the same result from batch mode pulsar:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">opt.index</span>(out.q, <span class="st">'stars'</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.batch, <span class="st">'stars'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">opt.index</span>(out.q, <span class="st">&#39;stars&#39;</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.batch, <span class="st">&#39;stars&#39;</span>)</span></code></pre></div>
 <p>It is also possible to run B-StARS in batch. The first two jobs (representing the first 2 subsamples) will run to completion before the final N-2 are run. This serializes the batch mode a bit but is, in general, faster whenever individual jobs require costly computation outside the lambda bounds, e.g., when some of the provided lambda values along the regularization path induce dense graph estimates.</p>
 <p>To keep the initial two jobs separate from the rest, the string provided to the <code>init</code> argument (“subtwo” by default) is concatenated to the basename of <code>regdir</code>. The registry/id is returned but named <code>init.reg</code> and <code>init.id</code> from <code>batch.pulsar</code>. If missing (the default), a random string is used for both registries.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">out.bbatch &lt;-<span class="st"> </span><span class="kw">update</span>(out.batch, <span class="dt">criterion=</span><span class="kw">c</span>(<span class="st">'stars'</span>, <span class="st">'gcd'</span>),</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">                     <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>out.bbatch &lt;-<span class="st"> </span><span class="kw">update</span>(out.batch, <span class="dt">criterion=</span><span class="kw">c</span>(<span class="st">&#39;stars&#39;</span>, <span class="st">&#39;gcd&#39;</span>),</span>
+<span id="cb14-2"><a href="#cb14-2"></a>                     <span class="dt">lb.stars=</span><span class="ot">TRUE</span>, <span class="dt">ub.stars=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <p>Check that we get the same result from bounded/batch mode pulsar:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">opt.index</span>(out.bbatch, <span class="st">'stars'</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.batch, <span class="st">'stars'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">opt.index</span>(out.bbatch, <span class="st">&#39;stars&#39;</span>) <span class="op">==</span><span class="st"> </span><span class="kw">opt.index</span>(out.batch, <span class="st">&#39;stars&#39;</span>)</span></code></pre></div>
 <div id="notes-on-batch-mode" class="section level3">
 <h3>Notes on batch mode</h3>
 <ul>
@@ -425,40 +450,40 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>References</h2>
 <div id="refs" class="references">
 <div id="ref-Banerjee2008">
-<p>Banerjee, Onureena, Laurent El Ghaoui, and Alexandre D’Aspremont. 2008. “Model selection through sparse maximum likelihood estimation for multivariate gaussian or binary data.” <em>The Journal of Machine …</em> 9:485–516. <a href="http://dl.acm.org/citation.cfm?id=1390696" class="uri">http://dl.acm.org/citation.cfm?id=1390696</a>.</p>
+<p>Banerjee, Onureena, Laurent El Ghaoui, and Alexandre D’Aspremont. 2008. “Model selection through sparse maximum likelihood estimation for multivariate gaussian or binary data.” <em>The Journal of Machine …</em> 9: 485–516. <a href="http://dl.acm.org/citation.cfm?id=1390696">http://dl.acm.org/citation.cfm?id=1390696</a>.</p>
 </div>
 <div id="ref-Foygel2010">
-<p>Foygel, Rina, and Mathias Drton. 2010. “Extended Bayesian Information Criteria for Gaussian Graphical Models.” <em>Arxiv Preprint</em>, 1–14. <a href="http://arxiv.org/abs/1011.6640" class="uri">http://arxiv.org/abs/1011.6640</a>.</p>
+<p>Foygel, Rina, and Mathias Drton. 2010. “Extended Bayesian Information Criteria for Gaussian Graphical Models.” <em>Arxiv Preprint</em>, 1–14. <a href="http://arxiv.org/abs/1011.6640">http://arxiv.org/abs/1011.6640</a>.</p>
 </div>
 <div id="ref-Friedman2008">
-<p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2008. “Sparse inverse covariance estimation with the graphical lasso.” <em>Biostatistics (Oxford, England)</em> 9 (3). Department of Statistics, Stanford University, CA 94305, USA.:432–41.</p>
+<p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2008. “Sparse inverse covariance estimation with the graphical lasso.” <em>Biostatistics (Oxford, England)</em> 9 (3): 432–41.</p>
 </div>
 <div id="ref-Hsieh2014">
-<p>Hsieh, Cho-Jui, Mátyás A Sustik, Inderjit S Dhillon, and Pradeep Ravikumar. 2014. “QUIC: Quadratic Approximation for Sparse Inverse Covariance Estimation.” <em>Journal of Machine Learning Research</em> 15:2911–47. <a href="http://jmlr.org/papers/v15/hsieh14a.html" class="uri">http://jmlr.org/papers/v15/hsieh14a.html</a>.</p>
+<p>Hsieh, Cho-Jui, Mátyás A Sustik, Inderjit S Dhillon, and Pradeep Ravikumar. 2014. “QUIC: Quadratic Approximation for Sparse Inverse Covariance Estimation.” <em>Journal of Machine Learning Research</em> 15: 2911–47. <a href="http://jmlr.org/papers/v15/hsieh14a.html">http://jmlr.org/papers/v15/hsieh14a.html</a>.</p>
 </div>
 <div id="ref-Lauritzen:1996">
 <p>Lauritzen, Steffen L. 1996. <em>Graphical models</em>. Oxford University Press.</p>
 </div>
 <div id="ref-Liu2010">
-<p>Liu, Han, Kathryn Roeder, and Larry Wasserman. 2010. “Stability approach to regularization selection (stars) for high dimensional graphical models.” <em>Proceedings of the Twenty-Third Annual Conference on Neural Information Processing Systems (NIPS)</em>, 1–14. <a href="https://papers.nips.cc/paper/3966-stability-approach-to-regularization-selection-stars-for-high-dimensional-graphical-models.pdf" class="uri">https://papers.nips.cc/paper/3966-stability-approach-to-regularization-selection-stars-for-high-dimensional-graphical-models.pdf</a>.</p>
+<p>Liu, Han, Kathryn Roeder, and Larry Wasserman. 2010. “Stability approach to regularization selection (stars) for high dimensional graphical models.” <em>Proceedings of the Twenty-Third Annual Conference on Neural Information Processing Systems (NIPS)</em>, 1–14. <a href="https://papers.nips.cc/paper/3966-stability-approach-to-regularization-selection-stars-for-high-dimensional-graphical-models.pdf">https://papers.nips.cc/paper/3966-stability-approach-to-regularization-selection-stars-for-high-dimensional-graphical-models.pdf</a>.</p>
 </div>
 <div id="ref-Meinshausen:2010">
-<p>Meinshausen, N, and P Bühlmann. 2010. “Stability selection.” <em>J. R. Stat. Soc. Ser. B Stat. Methodol.</em> 72 (4). Blackwell Publishing Ltd:417–73. <a href="https://doi.org/10.1111/j.1467-9868.2010.00740.x" class="uri">https://doi.org/10.1111/j.1467-9868.2010.00740.x</a>.</p>
+<p>Meinshausen, N, and P Bühlmann. 2010. “Stability selection.” <em>J. R. Stat. Soc. Ser. B Stat. Methodol.</em> 72 (4): 417–73. <a href="https://doi.org/10.1111/j.1467-9868.2010.00740.x">https://doi.org/10.1111/j.1467-9868.2010.00740.x</a>.</p>
 </div>
 <div id="ref-Mueller:2016">
 <p>Müller, Christian L., Richard Bonneau, and Zachary Kurtz. 2016. “Generalized Stability Approach for Regularized Graphical Models.”</p>
 </div>
 <div id="ref-Ravikumar2011b">
-<p>Ravikumar, Pradeep, Martin J. Wainwright, Garvesh Raskutti, and Bin Yu. 2011. “High-dimensional covariance estimation by minimizing L1 -penalized log-determinant divergence.” <em>Electronic Journal of Statistics</em> 5 (January 2010):935–80. <a href="https://doi.org/10.1214/11-EJS631" class="uri">https://doi.org/10.1214/11-EJS631</a>.</p>
+<p>Ravikumar, Pradeep, Martin J. Wainwright, Garvesh Raskutti, and Bin Yu. 2011. “High-dimensional covariance estimation by minimizing L1 -penalized log-determinant divergence.” <em>Electronic Journal of Statistics</em> 5 (January 2010): 935–80. <a href="https://doi.org/10.1214/11-EJS631">https://doi.org/10.1214/11-EJS631</a>.</p>
 </div>
 <div id="ref-Yaveroglu2014">
-<p>Yaveroglu, Ömer Nebil, Noël Malod-Dognin, Darren Davis, Zoran Levnajic, Vuk Janjic, Rasa Karapandza, Aleksandar Stojmirovic, and Nataša Pržulj. 2014. “Revealing the hidden language of complex networks.” <em>Scientific Reports</em> 4 (January):4547. <a href="https://doi.org/10.1038/srep04547" class="uri">https://doi.org/10.1038/srep04547</a>.</p>
+<p>Yaveroglu, Ömer Nebil, Noël Malod-Dognin, Darren Davis, Zoran Levnajic, Vuk Janjic, Rasa Karapandza, Aleksandar Stojmirovic, and Nataša Pržulj. 2014. “Revealing the hidden language of complex networks.” <em>Scientific Reports</em> 4 (January): 4547. <a href="https://doi.org/10.1038/srep04547">https://doi.org/10.1038/srep04547</a>.</p>
 </div>
 <div id="ref-Yuan:2007">
-<p>Yuan, Ming, and Yi Lin. 2007. “Model selection and estimation in the Gaussian graphical model.” <em>Biometrika</em> 94 (1):19–35. <a href="https://doi.org/10.1093/biomet/asm018" class="uri">https://doi.org/10.1093/biomet/asm018</a>.</p>
+<p>Yuan, Ming, and Yi Lin. 2007. “Model selection and estimation in the Gaussian graphical model.” <em>Biometrika</em> 94 (1): 19–35. <a href="https://doi.org/10.1093/biomet/asm018">https://doi.org/10.1093/biomet/asm018</a>.</p>
 </div>
 <div id="ref-Zhao2012">
-<p>Zhao, Tuo, H Liu, and Kathryn Roeder. 2012. “The huge package for high-dimensional undirected graph estimation in r.” <em>The Journal of Machine Learning Research</em> 13:1059–62. <a href="http://dl.acm.org/citation.cfm?id=2343681" class="uri">http://dl.acm.org/citation.cfm?id=2343681</a>.</p>
+<p>Zhao, Tuo, H Liu, and Kathryn Roeder. 2012. “The huge package for high-dimensional undirected graph estimation in r.” <em>The Journal of Machine Learning Research</em> 13: 1059–62. <a href="http://dl.acm.org/citation.cfm?id=2343681">http://dl.acm.org/citation.cfm?id=2343681</a>.</p>
 </div>
 </div>
 </div>
