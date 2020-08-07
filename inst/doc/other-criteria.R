@@ -1,7 +1,7 @@
-## ---- eval=TRUE, echo=FALSE----------------------------------------------
+## ---- eval=TRUE, echo=FALSE---------------------------------------------------
 library(pulsar)
 
-## ---- eval=TRUE, message=FALSE-------------------------------------------
+## ---- eval=TRUE, message=FALSE------------------------------------------------
   library(huge)
   library(Matrix)
 
@@ -30,11 +30,11 @@ library(pulsar)
   out  <- pulsar(X, ising.net, fargs=list(lambda=lams), criterion=c('stars', 'sufficiency'),
                subsample.ratio=.6, rep.num=60, seed=10010)
 
-## ---- eval=TRUE, fig.width=7, fig.height=5-------------------------------
+## ---- eval=TRUE, fig.width=7, fig.height=5------------------------------------
 plot(lams, out$sufficiency$merge[1,], type='l', ylab="sufficiency")
 points(lams, out$sufficiency$merge[4,], type='l', col='red')
 
-## ---- eval=TRUE----------------------------------------------------------
+## ---- eval=TRUE---------------------------------------------------------------
 
   tandonest <- function(i, out, tu, tl) {
     rmerge <- out$sufficiency$merge
@@ -53,7 +53,7 @@ points(lams, out$sufficiency$merge[4,], type='l', col='red')
   ## Symmetrize
   net <- sign(t(net) + net)
 
-## ---- eval=TRUE, warning=FALSE, message=FALSE, fig.width=7, fig.height=5----
+## ---- eval=TRUE, warning=FALSE, message=FALSE, fig.width=7, fig.height=5------
 dat <- huge.generator(n, p, 'hub', verbose=FALSE, v=.1, u=.4)
 out.diss  <- pulsar(dat$data, fargs=list(lambda=lams, verbose=FALSE),
                     rep.num=20, criterion=c('diss', 'stars'))

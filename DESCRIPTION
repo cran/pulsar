@@ -1,7 +1,7 @@
 Package: pulsar
 Title: Parallel Utilities for Lambda Selection along a Regularization
         Path
-Version: 0.3.6
+Version: 0.3.7
 Encoding: UTF-8
 Authors@R: c(person("Zachary", "Kurtz", role = c("aut", "cre"), email="zdkurtz@gmail.com"),
              person("Christian", "M\u00FCller", role = c("aut", "ctb"), email="cmueller@simonsfoundation.org"))
@@ -11,15 +11,15 @@ BugReports: http://github.com/zdk123/pulsar/issues
 Depends: R (>= 3.2.0)
 License: GPL (>= 2)
 Suggests: batchtools (>= 0.9.10), fs (>= 1.2.2), checkmate (>= 1.8.5),
-        orca, huge, MASS, QUIC, glmnet, network, cluster, testthat,
+        orca, huge, MASS, BigQuic, glmnet, network, cluster, testthat,
         knitr, rmarkdown
 Imports: methods, parallel, graphics, stats, utils, tools, Matrix
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-08-22 16:54:10 UTC; zachary
+Packaged: 2020-08-06 19:12:25 UTC; zachary
 Author: Zachary Kurtz [aut, cre],
   Christian Müller [aut, ctb]
 Maintainer: Zachary Kurtz <zdkurtz@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-08-22 22:20:02 UTC
+Date/Publication: 2020-08-07 08:40:07 UTC

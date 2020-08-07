@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Zachary D. Kurtz" />
 
 
 <title>Graphical model selection with pulsar</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -51,7 +63,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -97,7 +109,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -118,9 +130,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -289,7 +298,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -372,12 +382,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="using-a-custom-graphical-model-method" class="section level2">
 <h2>Using a custom graphical model method</h2>
 <p>You can pass in an arbitrary graphical model estimation function to <code>fun</code>. The function has some requirements: the first argument must be the nxp data matrix, and one argument must be named <code>lambda</code>, which should be a decreasing numeric vector containing the lambda path. The output should be a list of adjacency matrices (which can be of sparse representation from the <code>Matrix</code> package to save memory). Here is an example from <code>QUIC</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(QUIC)</span>
-<span id="cb6-2"><a href="#cb6-2"></a>quicr &lt;-<span class="st"> </span><span class="cf">function</span>(data, lambda) {</span>
-<span id="cb6-3"><a href="#cb6-3"></a>    S    &lt;-<span class="st"> </span><span class="kw">cov</span>(data)</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    est  &lt;-<span class="st"> </span>QUIC<span class="op">::</span><span class="kw">QUIC</span>(S, <span class="dt">rho=</span><span class="dv">1</span>, <span class="dt">path=</span>lambda, <span class="dt">msg=</span><span class="dv">0</span>, <span class="dt">tol=</span><span class="fl">1e-2</span>)</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(BigQuic)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>quicr &lt;-<span class="st"> </span><span class="cf">function</span>(data, lambda, <span class="dt">seed=</span><span class="ot">NULL</span>) {</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    est  &lt;-<span class="st"> </span>BigQuic<span class="op">::</span><span class="kw">BigQuic</span>(data, <span class="dt">lambda=</span>lambda, <span class="dt">epsilon=</span><span class="fl">1e-2</span>, <span class="dt">use_ram=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span>seed)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    est &lt;-<span class="st"> </span><span class="kw">setNames</span>(<span class="kw">lapply</span>(<span class="kw">ls</span>(<span class="dt">envir=</span>est), mget, <span class="dt">envir=</span><span class="kw">attr</span>(<span class="kw">unclass</span>(est), <span class="st">&#39;.xData&#39;</span>)), <span class="kw">ls</span>(<span class="dt">envir=</span>est))</span>
 <span id="cb6-5"><a href="#cb6-5"></a>    path &lt;-<span class="st">  </span><span class="kw">lapply</span>(<span class="kw">seq</span>(<span class="kw">length</span>(lambda)), <span class="cf">function</span>(i) {</span>
-<span id="cb6-6"><a href="#cb6-6"></a>                tmp &lt;-<span class="st"> </span>est<span class="op">$</span>X[,,i]; <span class="kw">diag</span>(tmp) &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>                tmp &lt;-<span class="st"> </span>est<span class="op">$</span>precision_matrices[[<span class="dv">1</span>]][[i]]; <span class="kw">diag</span>(tmp) &lt;-<span class="st"> </span><span class="dv">0</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>                <span class="kw">as</span>(tmp<span class="op">!=</span><span class="dv">0</span>, <span class="st">&quot;lgCMatrix&quot;</span>)</span>
 <span id="cb6-8"><a href="#cb6-8"></a>    })</span>
 <span id="cb6-9"><a href="#cb6-9"></a>    est<span class="op">$</span>path &lt;-<span class="st"> </span>path</span>
@@ -447,8 +457,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
 <div id="ref-Banerjee2008">
 <p>Banerjee, Onureena, Laurent El Ghaoui, and Alexandre D’Aspremont. 2008. “Model selection through sparse maximum likelihood estimation for multivariate gaussian or binary data.” <em>The Journal of Machine …</em> 9: 485–516. <a href="http://dl.acm.org/citation.cfm?id=1390696">http://dl.acm.org/citation.cfm?id=1390696</a>.</p>
 </div>
@@ -488,6 +498,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

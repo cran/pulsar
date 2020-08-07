@@ -4,11 +4,25 @@
 \alias{batch.pulsar}
 \title{pulsar: batch mode}
 \usage{
-batch.pulsar(data, fun = huge::huge, fargs = list(),
-  criterion = c("stars"), thresh = 0.1, subsample.ratio = NULL,
-  lb.stars = FALSE, ub.stars = FALSE, rep.num = 20, seed = NULL,
-  wkdir = getwd(), regdir = NA, init = "init", conffile = "",
-  job.res = list(), cleanup = FALSE, refit = TRUE)
+batch.pulsar(
+  data,
+  fun = huge::huge,
+  fargs = list(),
+  criterion = c("stars"),
+  thresh = 0.1,
+  subsample.ratio = NULL,
+  lb.stars = FALSE,
+  ub.stars = FALSE,
+  rep.num = 20,
+  seed = NULL,
+  wkdir = getwd(),
+  regdir = NA,
+  init = "init",
+  conffile = "",
+  job.res = list(),
+  cleanup = FALSE,
+  refit = TRUE
+)
 }
 \arguments{
 \item{data}{A \eqn{n*p} matrix of data matrix input to solve for the \eqn{p*p} graphical model}
@@ -37,7 +51,7 @@ batch.pulsar(data, fun = huge::huge, fargs = list(),
 
 \item{init}{text string appended to basename of the regdir path to store the batch jobs for the initial StARS variability estimate (ignored if `regdir` is NA)}
 
-\item{conffile}{path to or string that identifies a \code{\link[batchtools]{batchtools}} configuration file. This argument is passed directly to the \code{name} argument of the \code{\link[pulsar]{findConfFile}} function. See that help for detailed explanation.}
+\item{conffile}{path to or string that identifies a \code{\link[batchtools:batchtools-package]{batchtools}} configuration file. This argument is passed directly to the \code{name} argument of the \code{\link[pulsar]{findConfFile}} function. See that help for detailed explanation.}
 
 \item{job.res}{named list of resources needed for each job (e.g. for PBS submission script). The format and members depends on configuration and template. See examples section for a Torque example}
 
