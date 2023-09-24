@@ -317,7 +317,12 @@ pulsar <- function(data, fun=huge::huge, fargs=list(),
 
 #' @keywords internal
 .starsind <- function(summary, thresh, offset=1) {
-    max(which.max(summary >= thresh)[1] - offset, 1)
+  if(any(summary >= thresh)){
+    return(max(which.max(summary >= thresh)[1] - offset, 1))
+  } else {
+    warning("Optimal lambda may be outside the supplied values")
+    return(length(summary))
+  }
 }
 
 #' @keywords internal

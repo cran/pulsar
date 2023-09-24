@@ -1,4 +1,4 @@
-## ---- echo = FALSE, eval=TRUE-------------------------------------------------
+## ----echo = FALSE, eval=TRUE--------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   cache=TRUE,
@@ -9,19 +9,19 @@ pulsarchunks = FALSE
 getconfig    = TRUE
 README       = FALSE
 
-## ---- eval=FALSE, echo=README-------------------------------------------------
+## ----eval=FALSE, echo=README--------------------------------------------------
 #  library(devtools)
 #  install_github("zdk123/pulsar")
 #  library(pulsar)
 
-## ---- eval=FALSE, echo=!README------------------------------------------------
+## ----eval=FALSE, echo=!README-------------------------------------------------
 #  # install.packages('pulsar')
 #  ## uncomment below for the dev version
 #  # library(devtools)
 #  # install_github("zdk123/pulsar")
 #  library(pulsar)
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  library(huge)
 #  set.seed(10010)
 #  p <- 40 ; n <- 3000
@@ -29,7 +29,7 @@ README       = FALSE
 #  lmax <- getMaxCov(dat$sigmahat)
 #  lams <- getLamPath(lmax, lmax*.05, len=40)
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  hugeargs <- list(lambda=lams, verbose=FALSE)
 #  time1    <- system.time(
 #  out.p    <- pulsar(dat$data, fun=huge, fargs=hugeargs, rep.num=20,
@@ -40,16 +40,16 @@ README       = FALSE
 #  out.p
 #  fit.p
 
-## ---- eval=pulsarchunks-------------------------------------------------------
+## ----eval=pulsarchunks--------------------------------------------------------
 #  time2 <- system.time(
 #  out.b <- pulsar(dat$data, fun=huge, fargs=hugeargs, rep.num=20,
 #            criterion='stars', lb.stars=TRUE, ub.stars=TRUE, seed=10010))
 
-## ---- eval=pulsarchunks-------------------------------------------------------
+## ----eval=pulsarchunks--------------------------------------------------------
 #  time2[[3]] < time1[[3]]
 #  opt.index(out.p, 'stars') == opt.index(out.b, 'stars')
 
-## ---- eval=pulsarchunks-------------------------------------------------------
+## ----eval=pulsarchunks--------------------------------------------------------
 #  library(BigQuic)
 #  quicr <- function(data, lambda, seed=NULL) {
 #      est  <- BigQuic::BigQuic(data, lambda=lambda, epsilon=1e-2, use_ram=TRUE, seed=seed)
@@ -62,22 +62,22 @@ README       = FALSE
 #      est
 #  }
 
-## ---- eval=pulsarchunks-------------------------------------------------------
+## ----eval=pulsarchunks--------------------------------------------------------
 #  quicargs <- list(lambda=lams)
 #  nc    <- if (.Platform$OS.type == 'unix') 2 else 1
 #  out.q <- pulsar(dat$data, fun=quicr, fargs=quicargs, rep.num=100,
 #                  criterion='stars', lb.stars=TRUE, ub.stars=TRUE,
 #                  ncores=nc, seed=10010)
 
-## ---- eval=pulsarchunks-------------------------------------------------------
+## ----eval=pulsarchunks--------------------------------------------------------
 #  out.q2 <- update(out.q, criterion=c('stars', 'gcd'))
 #  opt.index(out.q2, 'gcd') <- get.opt.index(out.q2, 'gcd')
 #  fit.q2 <- refit(out.q2)
 
-## ---- eval=pulsarchunks, fig.width=12, fig.height=6, message=FALSE------------
+## ----eval=pulsarchunks, fig.width=12, fig.height=6, message=FALSE-------------
 #  plot(out.q2, scale=TRUE)
 
-## ---- eval=pulsarchunks, fig.width=18, fig.height=6, message=FALSE------------
+## ----eval=pulsarchunks, fig.width=18, fig.height=6, message=FALSE-------------
 #  starserr <- sum(fit.q2$refit$stars != dat$theta)/p^2
 #  gcderr   <- sum(fit.q2$refit$gcd   != dat$theta)/p^2
 #  gcderr < starserr
@@ -91,10 +91,10 @@ README       = FALSE
 #  plot(starsnet, coord=coords, usearrows=FALSE, main="StARS")
 #  plot(gcdnet, coord=coords, usearrows=FALSE, main="gcd+StARS")
 
-## ---- eval=getconfig----------------------------------------------------------
+## ----eval=getconfig-----------------------------------------------------------
 conffile <- pulsar::findConfFile()
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  ## uncomment below if batchtools is not already installed
 #  # install.packages('batchtools')
 #  library(batchtools)
@@ -103,13 +103,13 @@ conffile <- pulsar::findConfFile()
 #                            criterion='stars', seed=10010 #, cleanup=TRUE
 #                           )
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  opt.index(out.q, 'stars') == opt.index(out.batch, 'stars')
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  out.bbatch <- update(out.batch, criterion=c('stars', 'gcd'),
 #                       lb.stars=TRUE, ub.stars=TRUE)
 
-## ---- eval=pulsarchunks, message=FALSE----------------------------------------
+## ----eval=pulsarchunks, message=FALSE-----------------------------------------
 #  opt.index(out.bbatch, 'stars') == opt.index(out.batch, 'stars')
 
